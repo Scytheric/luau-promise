@@ -24,4 +24,4 @@ This Promise implementation attempts to satisfy these traits:
 
 This is a forked version of [Evaera's Promise library](https://github.com/evaera/roblox-lua-promise) with type annotations added to allow this library to be used in a strict-mode [Luau](https://luau-lang.org) project. Type annotations are imperfect due to limitations with the Luau language, but should at least cover intellisense and basic static analysis.
 
-Please notify me through the issues section if any issues are encountered related to type safety or crashes. Otherwise, please send any issues related to runtime behavior to the [original repository](https://github.com/evaera/roblox-lua-promise).
+Please notify me through the issues section if any issues are encountered related to type safety or crashes. Otherwise, please send any issues related to runtime behavior to the [original repository](https://github.com/evaera/roblox-lua-promise), being mindful of differences between this library and the original library.
