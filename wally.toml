@@ -1,6 +1,6 @@
 [package]
-name = "evaera/promise"
-description = "Promise implementation for Roblox"
+name = "ambers-careware/promise"
+description = "Promise implementation for Roblox Luau"
 version = "4.0.0"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"

@@ -1,5 +1,14 @@
 # Changelog
 
+## FORKED VERSION [4.0.0]
+- Added `any` type annotations to many variables in the internal implementation in order to prevent crashes while using this library
+- Added `--!nonstrict` compiler directive at the top of the script to expose types
+- Added library-user-facing typings for `Promise`, `Error`, `Status` and the library itself. This fork uses the `(object :: any) :: PublicType` idiom to simplify the types to the library, allowing for better autocompletion and type annotations in a strict-mode Luau codebase
+
+No other changes have been made to the library's runtime behavior.
+
+Please notify me through the issues section if any issues are encountered related to type safety or crashes. Otherwise, please send any issues related to runtime behavior to the [original repository](https://github.com/evaera/roblox-lua-promise).
+
 ## [4.0.0]
 ### Changed
 - `Promise:finally` no longer observes a rejection from a Promise. Calling `Promise:finally` is mostly transparent now.
