@@ -1,5 +1,5 @@
 [package]
-name = "ambers-careware/promise"
+name = "scytheric/promise"
 description = "Promise implementation for Roblox Luau"
 version = "4.0.0"
 license = "MIT"

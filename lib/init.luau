@@ -359,7 +359,7 @@ local Promise: any = {
 Promise.prototype = {}
 Promise.__index = Promise.prototype
 
-function Promise._new(traceback: any, callback: any, parent: any)
+function Promise._new(traceback: any, callback: any, parent: any): Promise
 	if parent ~= nil and not Promise.is(parent) then
 		error("Argument #2 to Promise.new must be a promise or nil", 2)
 	end
@@ -1174,102 +1174,14 @@ end
 	@param seconds number
 	@return Promise<number>
 ]=]
-do
-	-- uses a sorted doubly linked list (queue) to achieve O(1) remove operations and O(n) for insert
-
-	-- the initial node in the linked list
-	local first
-	local connection
-
-	function Promise.delay(seconds: any)
-		assert(type(seconds) == "number", "Bad argument #1 to Promise.delay, must be a number.")
-		-- If seconds is -INF, INF, NaN, or less than 1 / 60, assume seconds is 1 / 60.
-		-- This mirrors the behavior of wait()
-		if not (seconds >= 1 / 60) or seconds == math.huge then
-			seconds = 1 / 60
-		end
-
-		return Promise._new(debug.traceback(nil, 2), function(resolve: any, _: any, onCancel: any)
-			local startTime = Promise._getTime()
-			local endTime = startTime + seconds
-
-			local node = {
-				resolve = resolve,
-				startTime = startTime,
-				endTime = endTime,
-			}
-
-			if connection == nil then -- first is nil when connection is nil
-				first = node
-				connection = Promise._timeEvent:Connect(function()
-					local threadStart = Promise._getTime()
-
-					while first ~= nil and first.endTime < threadStart do
-						local current = first
-						first = current.next
-
-						if first == nil then
-							connection:Disconnect()
-							connection = nil
-						else
-							first.previous = nil
-						end
-
-						current.resolve(Promise._getTime() - current.startTime)
-					end
-				end)
-			else -- first is non-nil
-				if first.endTime < endTime then -- if `node` should be placed after `first`
-					-- we will insert `node` between `current` and `next`
-					-- (i.e. after `current` if `next` is nil)
-					local current = first
-					local next = current.next
-
-					while next ~= nil and next.endTime < endTime do
-						current = next
-						next = current.next
-					end
-
-					-- `current` must be non-nil, but `next` could be `nil` (i.e. last item in list)
-					current.next = node
-					node.previous = current
-
-					if next ~= nil then
-						node.next = next
-						next.previous = node
-					end
-				else
-					-- set `node` to `first`
-					node.next = first
-					first.previous = node
-					first = node
-				end
-			end
-
-			onCancel(function()
-				-- remove node from queue
-				local next = node.next
-
-				if first == node then
-					if next == nil then -- if `node` is the first and last
-						connection:Disconnect()
-						connection = nil
-					else -- if `node` is `first` and not the last
-						next.previous = nil
-					end
-					first = next
-				else
-					local previous = node.previous
-					-- since `node` is not `first`, then we know `previous` is non-nil
-					previous.next = next
-
-					if next ~= nil then
-						next.previous = previous
-					end
-				end
-			end)
+function Promise.delay(seconds: number)
+	assert(type(seconds) == "number", "Bad argument #1 to Promise.delay, must be a number.")
+	local startTime = Promise._getTime()
+	return Promise._new(debug.traceback(nil, 2), function(resolve)
+		task.delay(seconds, function()
+			resolve(Promise._getTime() - startTime)
 		end)
-	end
+	end)
 end
 
 --[=[
