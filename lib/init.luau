@@ -117,6 +117,11 @@ type PromiseLib = {
 		callback: (P...) -> Promise,
 		P...
 	) -> Promise,
+	retryIndefinitelyWithDelay: <P...>(
+		callback: (P...) -> Promise,
+		seconds: number,
+		P...
+	) -> Promise,
 	retry: <P...>(
 		callback: (P...) -> Promise,
 		times: number,
@@ -1984,6 +1989,44 @@ function Promise.retryIndefinitely<P...>(callback: (P...) -> Promise, ...: P...)
 
 	return Promise.resolve(callback(...)):catch(function()
 		return Promise.retryIndefinitely(callback, unpack(args, 1, length))
+	end)
+end
+
+--[=[
+	Repeatedly calls a Promise-returning function indefinitely until the returned Promise resolves.
+
+	```lua
+	local function willEventuallyReturnSomething(a, b, c)
+		return Promise.new(function(resolve, reject)
+			-- do something that can fail
+
+			local failed, thing = doSomethingThatCouldFailButMayResolveEventually(a, b, c)
+
+			if failed then
+				reject("it failed")
+			else
+				resolve(thing)
+			end
+		end)
+	end
+
+	local value = Promise.retryIndefinitely(canFail, "foo", "bar", "baz") -- args to send to canFail
+	```
+
+	@since 4.0.3
+	@param callback (...: P) -> Promise<T>
+	@param seconds number
+	@param ...? P
+	@return Promise<T>
+]=]
+function Promise.retryIndefinitelyWithDelay<P...>(callback: (P...) -> Promise, seconds: number, ...: P...)
+	assert(isCallable(callback), "Parameter #1 to Promise.retry must be a function")
+
+	local args, length = { ... }, select("#", ...)
+
+	return Promise.resolve(callback(...)):catch(function()
+		Promise.delay(seconds):await()
+		return Promise.retryIndefinitelyWithDelay(callback, unpack(args, 1, length), seconds)
 	end)
 end
 
