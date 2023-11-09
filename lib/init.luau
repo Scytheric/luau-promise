@@ -113,6 +113,10 @@ type PromiseLib = {
 		callback: (T...) -> ...any
 	) -> ((T...) -> Promise),
 	delay: (seconds: number) -> Promise,
+	retryIndefinitely: <P...>(
+		callback: (P...) -> Promise,
+		P...
+	) -> Promise,
 	retry: <P...>(
 		callback: (P...) -> Promise,
 		times: number,
