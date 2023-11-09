@@ -6,11 +6,11 @@
 	Edit by Amber Grace (@DataBrain) to include custom type annotations & extensions
 	Forked from github repository: evaera/roblox-lua-promise
 		Forked from release V4.0.0 (Mar 2nd 2022).
-		
+
 		I do not intend to maintain
 		this forked version of the library unless a major bug or exploit is
 		found with the original library that needs to be patched here.
-		
+
 	Licensed under MIT License (see nested module for full license)
 ]]
 
@@ -81,7 +81,7 @@ export type Error = {
 	error: string,
 	createdTick: number,
 	createdTrace: string,
-	
+
 	extend: (self: Error, options: ErrorOptions) -> Error,
 	getErrorChain: (self: Error) -> {Error},
 }
@@ -1945,6 +1945,42 @@ function Promise.prototype:now(rejectionValue: any)
 			context = ":now() was called at:\n\n" .. traceback,
 		}) or rejectionValue)
 	end
+end
+
+--[=[
+	Repeatedly calls a Promise-returning function indefinitely until the returned Promise resolves.
+
+	```lua
+	local function willEventuallyReturnSomething(a, b, c)
+		return Promise.new(function(resolve, reject)
+			-- do something that can fail
+
+			local failed, thing = doSomethingThatCouldFailButMayResolveEventually(a, b, c)
+
+			if failed then
+				reject("it failed")
+			else
+				resolve(thing)
+			end
+		end)
+	end
+
+	local value = Promise.retryIndefinitely(canFail, "foo", "bar", "baz") -- args to send to canFail
+	```
+
+	@since 3.0.1
+	@param callback (...: P) -> Promise<T>
+	@param ...? P
+	@return Promise<T>
+]=]
+function Promise.retryIndefinitely<P...>(callback: (P...) -> Promise, ...: P...)
+	assert(isCallable(callback), "Parameter #1 to Promise.retry must be a function")
+
+	local args, length = { ... }, select("#", ...)
+
+	return Promise.resolve(callback(...)):catch(function()
+		return Promise.retryIndefinitely(callback, unpack(args, 1, length))
+	end)
 end
 
 --[=[
