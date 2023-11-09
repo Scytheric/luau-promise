@@ -20,8 +20,12 @@ This Promise implementation attempts to satisfy these traits:
 * Composability
 * Predictable timing
 
-## FORKED VERSION
+## FORKED VERSION (x2)
 
-This is a forked version of [Evaera's Promise library](https://github.com/evaera/roblox-lua-promise) with type annotations added to allow this library to be used in a strict-mode [Luau](https://luau-lang.org) project. Type annotations are imperfect due to limitations with the Luau language, but should at least cover intellisense and basic static analysis.
+This is a forked version of Amber Grace's forked (forkception) version of [Evaera's Promise library](https://github.com/evaera/roblox-lua-promise) with additional functions, utility, etc. provided on-top of Grace's changes.
 
-Please notify me through the issues section if any issues are encountered related to type safety or crashes. Otherwise, please send any issues related to runtime behavior to the [original repository](https://github.com/evaera/roblox-lua-promise), being mindful of differences between this library and the original library.
+Grace's forked version adds type annotations to allow this library to be used in a strict-mode [Luau](https://luau-lang.org) project. Type annotations are imperfect due to limitations with the Luau language, but should at least cover intellisense and basic static analysis.
+
+I will probably update the types as the Luau language is improved upon to allow for richer types.
+
+Feel free to flag type safety issues or crashes in the issues section from this repo or Grace's repo. Otherwise, please send any issues related to runtime behavior to the [original repository](https://github.com/evaera/roblox-lua-promise), being mindful of differences between this library and the original library.

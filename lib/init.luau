@@ -1968,7 +1968,7 @@ end
 	local value = Promise.retryIndefinitely(canFail, "foo", "bar", "baz") -- args to send to canFail
 	```
 
-	@since 3.0.1
+	@since 4.0.1
 	@param callback (...: P) -> Promise<T>
 	@param ...? P
 	@return Promise<T>
